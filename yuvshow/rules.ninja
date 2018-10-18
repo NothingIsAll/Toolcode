@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = D:\Green_Soft\SDK\cmake\3.6.3155560\bin\cmake.exe -HC:\Users\mrfan\cmakedirtest1 -BC:\Users\mrfan\cmakedirtest1
+  command = D:\Green_Soft\SDK\cmake\3.6.3155560\bin\cmake.exe -HD:\work_home\Toolcode\yuvshow -BD:\work_home\Toolcode\yuvshow
   description = Re-running CMake...
   generator = 1
 
