@@ -1,0 +1,6 @@
+# ninja log v5
+11	307	0	CMakeFiles/native-lib.dir/NativeRender.cpp.o	256e2ef8147eb542
+3	257	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	8f43b142c7b65e72
+1	207	0	build.ninja	1680a198a5e584af
+0	210	0	build.ninja	1680a198a5e584af
+3	133	0	libnative-lib.so	4ba942f0a5c6662f
