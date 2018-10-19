@@ -8,10 +8,14 @@ cmake_minimum_required(VERSION 3.4.1)
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds it for you.
 # Gradle automatically packages shared libraries with your APK.
+set(ANDROID_NDK D:/Green_Soft/SDK/ndk-bundle)
 find_path(GLES2_INCLUDE_DIR GLES2/gl2.h
-    HINTS ${ANDROID_NDK})              #找到opengl头文件路径
+    HINTS D://Green_Soft//SDK//ndk-bundle)              #找到opengl头文件路径
+set(GLES2_INCLUDE_DIR D:/Green_Soft/SDK/ndk-bundle/platforms/android-12/arch-arm/usr/include)
 find_library(GLES2_LIBRARY libGLESv2.so
     HINTS ${GLES2_INCLUDE_DIR}/../lib) #找到opengl库文件路径
+
+	
 
 find_library(log-lib
              log)
@@ -50,7 +54,8 @@ target_link_libraries( # Specifies the target library.
                        GLESv1_CM
                        jnigraphics
                        #${GLES2_LIBRARY}
-                       ${log-lib} 
+                       #${log-lib}
+					   log
 					   yuv)
 
 

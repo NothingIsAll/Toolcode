@@ -1,0 +1,27 @@
+# ninja log v5
+10	295	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	2e5b8dab33e4bd09
+1	359	0	CMakeFiles/native-lib.dir/NativeRender.cpp.o	7a9a8603c85606a5
+360	747	0	libnative-lib.so	65e7bbce515ef89a
+0	210	0	build.ninja	e49e982ecdb0a8ad
+2	264	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+11	308	0	CMakeFiles/native-lib.dir/NativeRender.cpp.o	74f67245ead16e4d
+308	443	0	libnative-lib.so	3719b1da8c70552f
+1	204	0	build.ninja	e49e982ecdb0a8ad
+3	315	0	CMakeFiles/native-lib.dir/NativeRender.cpp.o	74f67245ead16e4d
+3	238	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+240	2884	0	libnative-lib.so	3719b1da8c70552f
+12	254	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+3	313	0	CMakeFiles/native-lib.dir/NativeRender.cpp.o	74f67245ead16e4d
+313	462	0	libnative-lib.so	3719b1da8c70552f
+3	250	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+252	391	0	libnative-lib.so	3719b1da8c70552f
+5	501	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+503	756	0	libnative-lib.so	3719b1da8c70552f
+3	260	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+262	390	0	libnative-lib.so	3719b1da8c70552f
+3	272	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+274	1084	0	libnative-lib.so	3719b1da8c70552f
+3	257	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+258	401	0	libnative-lib.so	3719b1da8c70552f
+3	263	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	34aed84deaea70c8
+264	400	0	libnative-lib.so	3719b1da8c70552f

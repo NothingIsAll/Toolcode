@@ -6,18 +6,18 @@ NativeRender::NativeRender() {
 	bitmapWidth = KROOM_VIDEO_WIDTH;
 	bitmapHeight = KROOM_VIDEO_HEIGHT;
 	data = (unsigned char*) malloc(bitmapWidth * bitmapHeight * 4);
-	float pos[12] = { one, one, 0, // 右上
-			one, -one, 0, // 右下
-			-one, one, 0, // 左上
-			-one, -one, 0 // 左下
+	float pos[12] = { one, one, 0, // 鍙充笂
+			one, -one, 0, // 鍙充笅
+			-one, one, 0, // 宸︿笂
+			-one, -one, 0 // 宸︿笅
 			};
-	//不做转向,针对横屏
+	//涓嶅仛杞悜,閽堝妯睆
 //	float ins[8] = { 0, one, 0, 0, one, one, one, 0 };
 
-	//转向逆时针90度,针对竖屏
+	//杞悜閫嗘椂閽�90搴�,閽堝绔栧睆
 //	float ins[8] = { 0, 0, one, 0, 0, one, one, one };
 
-	//转向逆时针180度,针对竖屏
+	//杞悜閫嗘椂閽�180搴�,閽堝绔栧睆
 	float ins[8] = { one, 0, one, one, 0, 0, 0, one };
 
 	memcpy(vertices, pos, 12 * sizeof(float));
@@ -27,27 +27,27 @@ NativeRender::NativeRender() {
 }
 void NativeRender::onSurfaceCreated() {
 	LOGD("NativeRender::onSurfaceCreated");
-	// 告诉系统对透视进行修正
+	// 鍛婅瘔绯荤粺瀵归�忚杩涜淇
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-	// 黑色背景
+	// 榛戣壊鑳屾櫙
 	glClearColor(0, 0, 0, 0);
-	// 启用阴影平滑
+	// 鍚敤闃村奖骞虫粦
 	glShadeModel(GL_SMOOTH);
 
-	// 清除深度缓存
+	// 娓呴櫎娣卞害缂撳瓨
 	glClearDepthf(one);
-	// 启用深度测试
+	// 鍚敤娣卞害娴嬭瘯
 	glEnable(GL_DEPTH_TEST);
-	// 所做深度测试的类型
+	// 鎵�鍋氭繁搴︽祴璇曠殑绫诲瀷
 	glDepthFunc(GL_LEQUAL);
 
-	// 创建纹理
+	// 鍒涘缓绾圭悊
 	glGenTextures(1, vbo);
-	// 绑定要使用的纹理
+	// 缁戝畾瑕佷娇鐢ㄧ殑绾圭悊
 	glBindTexture(GL_TEXTURE_2D, vbo[0]);
-	// 生成纹理
+	// 鐢熸垚绾圭悊
 	//GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
-	// 线性滤波
+	// 绾挎�ф护娉�
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -56,7 +56,7 @@ void NativeRender::onSurfaceCreated() {
 }
 void NativeRender::onSurfaceChanged(GLint width, GLint height) {
 	LOGD("NativeRender::onSurfaceChanged.width=%d,height=%d", width, height);
-	//图形最终显示到屏幕的区域的位置、长和宽
+	//鍥惧舰鏈�缁堟樉绀哄埌灞忓箷鐨勫尯鍩熺殑浣嶇疆銆侀暱鍜屽
 	glViewport(0, 0, width, height);
 	//float ratio = (float) width / height;
 	//glFrustumf(-ratio, ratio, -1, 1, 1, 1);
@@ -65,19 +65,19 @@ void NativeRender::onSurfaceChanged(GLint width, GLint height) {
 }
 
 void NativeRender::onDrawFrame() {
-	// 清除深度和颜色缓存
+	// 娓呴櫎娣卞害鍜岄鑹茬紦瀛�
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
 	pthread_mutex_lock(&rgbMutex);
 	if (dataState == 1) {
-		// 生成纹理
+		// 鐢熸垚绾圭悊
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmapWidth, bitmapHeight, 0,
 					 GL_RGBA, GL_UNSIGNED_BYTE, data);
 		//LOGD("NativeRender::onDrawFrame.dataState=%d", dataState);
 		dataState = 0;
 	} else if (dataState == 2) {
-		// 生成纹理
+		// 鐢熸垚绾圭悊
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmapWidth, bitmapHeight, 0,
 					 GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -85,73 +85,23 @@ void NativeRender::onDrawFrame() {
 		dataState = 0;
 	}
 	pthread_mutex_unlock(&rgbMutex);
-	// 开启顶点和纹理缓冲
+	// 寮�鍚《鐐瑰拰绾圭悊缂撳啿
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	//开启纹理
+	//寮�鍚汗鐞�
 	glEnable(GL_TEXTURE_2D);
-	// 设置点点和纹理
+	// 璁剧疆鐐圭偣鍜岀汗鐞�
 	glVertexPointer(3, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 
-	// 向z轴里移入
+	// 鍚憐杞撮噷绉诲叆
 	//glTranslatef(0.0f, 0.0f, -2.0f);
-	// 设置3个方向的旋转
+	// 璁剧疆3涓柟鍚戠殑鏃嬭浆
 //	glRotatef(0, one, 0.0f, 0.0f);
 //	glRotatef(0, 0.0f, one, 0.0f);
 //	glRotatef(0, 0.0f, 0.0f, one);
 
-	// 绘制图形
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisable(GL_TEXTURE_2D);
-}
-void NativeRender::onDrawFrame1() {
-	// 清除深度和颜色缓存
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	glLoadIdentity();
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	pthread_mutex_lock(&rgbMutex);
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	if (dataState == 1) {
-		// 生成纹理
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmapWidth, bitmapHeight, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, data);
-		//LOGD("NativeRender::onDrawFrame.dataState=%d", dataState);
-		dataState = 0;
-	} else if (dataState == 2) {
-		// 生成纹理
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmapWidth, bitmapHeight, 0,
-				GL_RGB, GL_UNSIGNED_BYTE, data);
-		//LOGD("NativeRender::onDrawFrame.dataState=%d", dataState);
-		dataState = 0;
-	}
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	pthread_mutex_unlock(&rgbMutex);
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	// 开启顶点和纹理缓冲
-	glEnableClientState(GL_VERTEX_ARRAY);
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	//开启纹理
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	glEnable(GL_TEXTURE_2D);
-	// 设置点点和纹理
-	glVertexPointer(3, GL_FLOAT, 0, vertices);
-	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
-	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-	// 向z轴里移入
-	//glTranslatef(0.0f, 0.0f, -2.0f);
-	// 设置3个方向的旋转
-//	glRotatef(0, one, 0.0f, 0.0f);
-//	glRotatef(0, 0.0f, one, 0.0f);
-//	glRotatef(0, 0.0f, 0.0f, one);
-
-	// 绘制图形
+	// 缁樺埗鍥惧舰
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -159,7 +109,8 @@ void NativeRender::onDrawFrame1() {
 	glDisable(GL_TEXTURE_2D);
 	//LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
 }
-void NativeRender::setBitmap1(AndroidBitmapInfo info, void* bitmap) {
+
+void NativeRender::setBitmap(AndroidBitmapInfo info, void* bitmap) {
 	pthread_mutex_lock(&rgbMutex);
 	bitmapWidth = info.width;
 	bitmapHeight = info.height;
@@ -167,15 +118,11 @@ void NativeRender::setBitmap1(AndroidBitmapInfo info, void* bitmap) {
 	memcpy(data, bitmap, bitmapWidth * bitmapHeight * 4);
 	pthread_mutex_unlock(&rgbMutex);
 }
-void NativeRender::setBitmap(int w, int h, const char * rgba) {
-	pthread_mutex_lock(&rgbMutex);
-	memcpy(data, rgba, w * h * 4);
-	pthread_mutex_unlock(&rgbMutex);
-}
-void NativeRender::setRGB(int w, int h, const char * rgb) {
-	if (dataState != 0) { //正在播放,扔掉本帧
-		LOGD("正在播放,扔掉本帧");
-		return;
+
+int NativeRender::setRGB(int w, int h, const char * rgb) {
+	if (dataState != 0) { //姝ｅ湪鎾斁,鎵旀帀鏈抚
+		LOGD("姝ｅ湪鎾斁,鎵旀帀鏈抚");
+		return -1;
 	}
 #ifdef OPENGL_COMP
 	int dstW = 512;
@@ -189,6 +136,7 @@ void NativeRender::setRGB(int w, int h, const char * rgb) {
 	dataState = 2;
 	memcpy(data, rgbTemp, bitmapWidth * bitmapHeight * 3);
 	pthread_mutex_unlock(&rgbMutex);
+	return 0;
 #else
 	pthread_mutex_lock(&rgbMutex);
 	bitmapWidth = w;
@@ -197,8 +145,53 @@ void NativeRender::setRGB(int w, int h, const char * rgb) {
 	memcpy(data, rgb, bitmapWidth * bitmapHeight * 3);
 	//memcpy(data, rgb, bitmapWidth * bitmapHeight );
 	pthread_mutex_unlock(&rgbMutex);
+	return 0;
 #endif
 }
+
+int NativeRender::setYUV420N21(int width,int heigh,char* buf,int size){
+
+	int bufsize_n21y = width*heigh*2;
+	int bufsize_n21uv = bufsize_n21y;
+	int realsize_n21y = width*heigh;
+	int realsize_n21uv = realsize_n21y/2;
+	int realwidth_y = width + width%32;
+	int realwidth_uv = realwidth_y;
+	int realwidth_u = realwidth_y/2;
+	int realwidth_v = realwidth_u;
+	char* bufn21y = (char*) malloc(bufsize_n21y);
+	char* bufn21uv = (char*)malloc(bufsize_n21uv);
+	int bufsize_420 =  bufsize_n21y;
+	char* buf_y = (char*)malloc(bufsize_420);
+	char* buf_u = (char*)malloc(bufsize_420);
+	char* buf_v = (char*)malloc(bufsize_420);
+	char* buf_rgb = (char*)malloc(bufsize_420*2);
+	memcpy(bufn21y,buf,realsize_n21y);
+	memcpy(bufn21uv,buf+realsize_n21y,realsize_n21uv);
+
+    libyuv::NV21ToI420((uint8*)bufn21y,realwidth_y,
+                       (uint8*)bufn21uv,realwidth_y,
+                       (uint8*)buf_y,realwidth_y,
+                       (uint8*)buf_v,realwidth_u,
+                       (uint8*)buf_u,realwidth_v,
+                       width,heigh);
+    libyuv::I420ToRGB24((uint8*)buf_y, realwidth_y,
+                        (uint8*)buf_u, realwidth_u,
+                        (uint8*)buf_v, realwidth_v,
+                        (uint8*)buf_rgb, width*3,
+                        width, heigh);
+
+    int res = setRGB(width,heigh,buf_rgb);
+
+    free(bufn21y);
+    free(bufn21uv);
+    free(buf_y);
+    free(buf_u);
+    free(buf_v);
+    free(buf_rgb);
+    return res;
+}
+
 void NativeRender::scale(int srcW, int srcH, const char *src, int dstW,
 		int dstH, char *dst, int bytesPerPixel) {
 	uint32_t scaleX = (srcW << 16) / dstW, scaleY = (srcH << 16) / dstH;

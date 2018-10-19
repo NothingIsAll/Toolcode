@@ -1,0 +1,3 @@
+D:/work_home/Toolcode/yuvshow/build/CMakeFiles/native-lib.dir
+D:/work_home/Toolcode/yuvshow/build/CMakeFiles/edit_cache.dir
+D:/work_home/Toolcode/yuvshow/build/CMakeFiles/rebuild_cache.dir

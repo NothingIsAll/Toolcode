@@ -1,0 +1,1 @@
+ -LD:/work_home/Toolcode/yuvshow/. -lGLESv2 -lGLESv1_CM -ljnigraphics -llog -lyuv -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

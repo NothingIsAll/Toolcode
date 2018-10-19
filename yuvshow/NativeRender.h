@@ -3,49 +3,51 @@
 #include "Common.h"
 #include <android/bitmap.h>
 #include <GLES/gl.h>
-
+extern "C" {
+#include "libyuv.h"
+}
 
 namespace room {
 class NativeRender {
 private:
 	/**
-	 * 是否有新的数据
-	 * 0无数据,1图片rgba数据,2摄像头rgb数据
+	 * 鏄惁鏈夋柊鐨勬暟鎹�
+	 * 0鏃犳暟鎹�,1鍥剧墖rgba鏁版嵁,2鎽勫儚澶磖gb鏁版嵁
 	 */
 	int dataState;
 	/**
-	 * 定义顶点时使用
+	 * 瀹氫箟椤剁偣鏃朵娇鐢�
 	 */
 	float one;
 	/**
-	 * 只有一张图,也就是一个纹理
+	 * 鍙湁涓�寮犲浘,涔熷氨鏄竴涓汗鐞�
 	 */
 	unsigned int vbo[1];
 	/**
-	 * 正方形顶点
+	 * 姝ｆ柟褰㈤《鐐�
 	 */
 	float vertices[12];
 	/**
-	 * 纹理点
+	 * 绾圭悊鐐�
 	 */
 	float texCoords[8];
 
 	/**
-	 * rgb图片宽度
+	 * rgb鍥剧墖瀹藉害
 	 */
 	int bitmapWidth;
 	/**
-	 * rgb图片高度
+	 * rgb鍥剧墖楂樺害
 	 */
 	int bitmapHeight;
 
 	/**
-	 * rgb数据
+	 * rgb鏁版嵁
 	 */
 	unsigned char* data;
 
 	/**
-	 * rgb锁
+	 * rgb閿�
 	 */
 	pthread_mutex_t rgbMutex;
 
@@ -56,10 +58,9 @@ public:
 	void onSurfaceCreated();
 	void onSurfaceChanged(int width, int height);
 	void onDrawFrame();
-	void onDrawFrame1();
-	void setBitmap(int w, int h, const char * rgba);
-	void setBitmap1(AndroidBitmapInfo info, void* bitmap);
-	void setRGB(int w, int h, const char * rgb);
+	void setBitmap(AndroidBitmapInfo info, void* bitmap);
+	int setRGB(int w, int h, const char * rgb);
+	int setYUV420N21(int width,int heigh,char* buf,int size);
 	NativeRender();
 	~NativeRender();
 };

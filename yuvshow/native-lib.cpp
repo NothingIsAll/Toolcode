@@ -8,85 +8,84 @@
 #include <android/native_window_jni.h>
 #include <android/bitmap.h>
 
-extern "C" {
-
-#include "libyuv.h"
-}
-
-#define LOGE(FORMAT, ...) __android_log_print(ANDROID_LOG_ERROR,"ffmpeg",FORMAT,##__VA_ARGS__);
-//16bit 44100 PCM 鏁版嵁澶у皬
-#define MAX_AUDIO_FRME_SIZE 44100 * 2
-
+#define LOGE(FORMAT, ...) __android_log_print(ANDROID_LOG_ERROR,"YUVSHOW",FORMAT,##__VA_ARGS__);
 using namespace room;
-
-
-extern "C" JNIEXPORT jstring Java_entry_com_audiocn_tlkg_opengltest_NativeFfmpegGL_stringFromJNI(JNIEnv *env, jclass type){
-    return  env->NewStringUTF("hello mrfan iam come back!!");
-}
-
 NativeRender glrender;
 
-#define BUFFERSIZE 1280*720
+#define JAVA_CLASS_NAME "com/audiocn/libs/CamShowGlRender"
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_entry_com_audiocn_tlkg_opengltest_NativeFfmpegGL_video2RGBGL(JNIEnv *env, jclass type, jstring input_path_ ) {
-    LOGE("----------------- linenum = %d  funname = %s",__LINE__,__FUNCTION__);
-    int width = 1280;//720;//1280;
-    int height = 720;//480;//720;
-
-    FILE* file = fopen("/data/camera.yuv","rb+");
-    if (!file){
-        LOGE("==================fopen error!!!==============");
-        return;
-    }
-    char* buf_nv21y = (char*)malloc(BUFFERSIZE*2);
-    char* buf_nv21uv =(char*)malloc(BUFFERSIZE*2);//(char*)malloc(BUFFERSIZE*2);
-    char* bufy = (char*)malloc(BUFFERSIZE*2);//[BUFFERSIZE]={};
-    char* bufu = (char*)malloc(BUFFERSIZE*2);//[BUFFERSIZE]={};
-    char* bufv = (char*)malloc(BUFFERSIZE*2);//[BUFFERSIZE] ={};
-    char* buf_rgb = (char*)malloc(BUFFERSIZE*4);
-    int resread = 1;
-    int alignsize_y = width + width%32;
-    int alignsize_u = alignsize_y/2;
-    int alignsize_v = alignsize_u;
-    while (resread >0) {
-        resread = fread(buf_nv21y,1,BUFFERSIZE,file);
-        resread = fread(buf_nv21uv,1,BUFFERSIZE/2,file);
-
-        libyuv::NV21ToI420((uint8*)buf_nv21y,alignsize_y,
-                           (uint8*)buf_nv21uv,alignsize_y,
-                           (uint8*)bufy,alignsize_y,
-                           (uint8*)bufv,alignsize_v,
-                           (uint8*)bufu,alignsize_u,
-                           width,height);
-        libyuv::I420ToRGB24((uint8*)bufy, alignsize_y,
-                            (uint8*)bufu, alignsize_u,
-                            (uint8*)bufv, alignsize_v,
-                            (uint8*)buf_rgb, width*3,
-                            width, height);
-
-        glrender.setRGB(width,height,(const char*)buf_rgb);
-
-    }
-
-}
+extern "C"{
 
 
-extern "C"
-JNIEXPORT void JNICALL
-        Java_entry_com_audiocn_tlkg_opengltest_demoglRender_onSurfaceCreated(JNIEnv *env, jclass type){
-    glrender.onSurfaceCreated();
-}
+	 jstring stringFromJNI(JNIEnv *env, jclass type){
+		return  env->NewStringUTF("hello mrfan iam come back!!");
+	}
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_entry_com_audiocn_tlkg_opengltest_demoglRender_onSurfaceChanged(JNIEnv *env, jclass type,jint width,jint heigh){
-    glrender.onSurfaceChanged(width,heigh);
-}
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_entry_com_audiocn_tlkg_opengltest_demoglRender_onDrawFrame(JNIEnv *env, jclass type){
-    glrender.onDrawFrame();
+	 void onSurfaceCreated(JNIEnv *env, jclass type){
+		glrender.onSurfaceCreated();
+	}
+
+
+	 void onSurfaceChanged(JNIEnv *env, jclass type,jint width,jint heigh){
+		glrender.onSurfaceChanged(width,heigh);
+	}
+
+
+	 void onDrawFrame(JNIEnv *env, jclass type){
+		glrender.onDrawFrame();
+	}
+
+
+	 jint PutYuvData(JNIEnv *env, jclass type,jbyteArray data,jint size,jint width,jint heigh){
+		char *buf = (char*) env->GetByteArrayElements(data, JNI_FALSE);
+		int res = glrender.setYUV420N21(width,heigh,buf,size);
+		env->ReleaseByteArrayElements(data, (jbyte*)buf, JNI_FALSE);
+		return res;
+	}
+
+
+	static JNINativeMethod getMethods[] = {
+	        {"stringFromJNI","()Ljava/lang/String;",(void*)stringFromJNI},
+			{"onSurfaceCreated","()V",(void*)onSurfaceCreated},
+			{"onSurfaceChanged","(II)V",(void*)onSurfaceChanged},
+			{"onDrawFrame","()V",(void*)onDrawFrame},
+			{"PutYuvData","([BIII)I",(void*)PutYuvData}
+	};
+
+	//此函数通过调用JNI中 RegisterNatives 方法来注册我们的函数
+	static int registerNativeMethods(JNIEnv* env, const char* className,JNINativeMethod* getMethods,int methodsNum){
+	    jclass clazz;
+	    //找到声明native方法的类
+	    clazz = env->FindClass(className);
+	    if(clazz == NULL){
+	        return JNI_FALSE;
+	    }
+	   //注册函数 参数：java类 所要注册的函数数组 注册函数的个数
+	    if(env->RegisterNatives(clazz,getMethods,methodsNum) < 0){
+	        return JNI_FALSE;
+	    }
+	    return JNI_TRUE;
+	}
+
+	static int registerNatives(JNIEnv* env){
+	    //指定类的路径，通过FindClass 方法来找到对应的类
+	    const char* className  = JAVA_CLASS_NAME;
+	    return registerNativeMethods(env,className,getMethods, sizeof(getMethods)/ sizeof(getMethods[0]));
+	}
+	//回调函数 在这里面注册函数
+	JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved){
+	    JNIEnv* env = NULL;
+	   //判断虚拟机状态是否有问题
+	    if(vm->GetEnv((void**)&env,JNI_VERSION_1_6)!= JNI_OK){
+	        return -1;
+	    }
+	    //开始注册函数 registerNatives -》registerNativeMethods -》env->RegisterNatives
+	    if(!registerNatives(env)){
+	        return -1;
+	    }
+	    //返回jni 的版本
+	    return JNI_VERSION_1_6;
+	}
+
 }
