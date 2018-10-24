@@ -75,10 +75,11 @@ public class MainActivity extends Activity {
         switch (action){
             case PLAY:
                 {
-                    String liveInput = "http://221.228.226.23/11/t/j/v/b/tjvbwspwhqdmgouolposcsfafpedmb/sh.yinyuetai.com/691201536EE4912BF7E4F1E2C67B8119.mp4";
+                    //String liveInput = "http://221.228.226.23/11/t/j/v/b/tjvbwspwhqdmgouolposcsfafpedmb/sh.yinyuetai.com/691201536EE4912BF7E4F1E2C67B8119.mp4";
                    // String liveInput = "http://flv2.bn.netease.com/videolib3/1604/28/fVobI0704/SD/fVobI0704-mobile.mp4";
                    // String liveInput = "http://221.228.226.5/15/t/s/h/v/tshvhsxwkbjlipfohhamjkraxuknsc/sh.yinyuetai.com/88DC015DB03C829C2126EEBBB5A887CB.mp4";
                    // String liveInput = new File(Environment.getExternalStorageDirectory(),"video.mp4").getAbsolutePath();
+                    String liveInput = "/data/peplocass.mp4";
                     //  Toast.makeText(this,input,Toast.LENGTH_SHORT).show();
                     int ret =  avPlayer.OpenAVWithUrlAndView(liveInput,null,glView);
                 }
